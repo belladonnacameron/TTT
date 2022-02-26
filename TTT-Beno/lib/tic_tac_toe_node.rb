@@ -2,7 +2,8 @@ require_relative 'tic_tac_toe'
 
 class TicTacToeNode
 
-  attr_reader :board, :next_mover_mark, :prev_move_pos
+  attr_reader :board
+  attr_accessor :next_mover_mark, :prev_move_pos
 
   def initialize(board, next_mover_mark, prev_move_pos = nil)
     @board = Board.new
@@ -25,6 +26,7 @@ class TicTacToeNode
     (0..2).each do |row|
       (0..2).each do |col|
         pos = [row, col]
+        # can't move here if pos isn't empty
         next if board.empty?(pos) 
         # for each empty pos create a new node by duping the board
         new_board = board.dup
@@ -36,8 +38,12 @@ class TicTacToeNode
         else
           next_mover_mark = :x
         end
-      # set prev_move_pos to the position you just marked
+        # set prev_move_pos to the position you just marked
+        prev_move_pos = pos
+        # add new child instance to children array
+        children < TicTacToeNode.new(new_board,next_mover_mark, prev_move_pos)
     end
     # return nodes representing all potential game states one move after current the node
+    children
   end
 end
