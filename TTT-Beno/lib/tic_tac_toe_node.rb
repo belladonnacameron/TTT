@@ -2,11 +2,10 @@ require_relative 'tic_tac_toe'
 
 class TicTacToeNode
 
-  attr_reader :board
-  attr_accessor :next_mover_mark, :prev_move_pos
+  attr_reader :board, :next_mover_mark, :prev_move_pos
 
   def initialize(board, next_mover_mark, prev_move_pos = nil)
-    @board = Board.new
+    @board = board
     @next_mover_mark = next_mover_mark
     @prev_move_pos = prev_move_pos
   end
@@ -27,10 +26,10 @@ class TicTacToeNode
     end
     # Recursive case 1 (our turn, all child nodes are losers)
     if self.next_mover_mark == evaluator
-      self.children.all? { |child| losing_node?(child) }
+      self.children.all? { |child| child.losing_node?(evaluator) }
     else
       # Recursive case 2 (opponent's turn)
-      self.children.any? { |child| losing_node?(child) }
+      self.children.any? { |child| child.losing_node?(evaluator) }
     end
   end
   
@@ -43,38 +42,36 @@ class TicTacToeNode
     end
     # Recursive case 1 (our turn, have a winning child node)
     if self.next_mover_mark == evaluator
-      self.children.any? { |child| winning_node?(child) }
+      self.children.any? { |child| child.winning_node?(evaluator) }
     else
       # Recursive case 2 (opponent's turn)
-      self.children.all? { |child| winning_node?(child) }
+      self.children.all? { |child| child.winning_node?(evaluator) }
+    end
   end
   
   # This method generates an array of all moves that can be made after
   # the current move.
   def children
-    children = []
+    children_arr = []
     # iterate through all empty? positions on board instance
     (0..2).each do |row|
       (0..2).each do |col|
         pos = [row, col]
-        # can't move here if pos isn't empty
-        next if board.empty?(pos) 
+        next unless board.empty?(pos) # can't move here if pos isn't empty
         # for each empty pos create a new node by duping the board
         new_board = board.dup
         # add a next_mover_mark in the position
         new_board[pos] = self.next_mover_mark
         # alternate next_mover_mark so players switch properly
-        if self.next_mover_mark == :x
-          self.next_mover_mark = :o
-        else
-          self.next_mover_mark = :x
-        end
+        next_mover_mark = (self.next_mover_mark == :x ? :o : :x)
         # set prev_move_pos to the position you just marked
-        self.prev_move_pos = pos
+        # self.prev_move_pos = pos
         # add new child instance to children array
-        children < TicTacToeNode.new(new_board,next_mover_mark, prev_move_pos)
+        children_arr << TicTacToeNode.new(new_board, next_mover_mark, prev_move_pos)
+      end
     end
     # return nodes representing all potential game states one move after current the node
-    children
+    children_arr
   end
+
 end
