@@ -2,7 +2,8 @@ require_relative 'tic_tac_toe'
 
 class TicTacToeNode
 
-  attr_reader :board, :next_mover_mark, :prev_move_pos
+  attr_reader :board, :next_mover_mark
+  attr_accessor :prev_move_pos
 
   def initialize(board, next_mover_mark, prev_move_pos = nil)
     @board = board
@@ -65,7 +66,7 @@ class TicTacToeNode
         # alternate next_mover_mark so players switch properly
         next_mover_mark = (self.next_mover_mark == :x ? :o : :x)
         # set prev_move_pos to the position you just marked
-        # self.prev_move_pos = pos
+        self.prev_move_pos = pos
         # add new child instance to children array
         children_arr << TicTacToeNode.new(new_board, next_mover_mark, prev_move_pos)
       end
